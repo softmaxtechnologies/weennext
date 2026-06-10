@@ -85,7 +85,21 @@ const saveCart = (cart) => {
   window.dispatchEvent(new Event("cartUpdated"));
 };
 
-// ---------- Icons ----------
+// Helper to display user email from One Tap
+const getUserEmailFromOneTap = () => {
+  if (typeof window !== "undefined" && window.localStorage) {
+    return localStorage.getItem("ween_user_email") || null;
+  }
+  return null;
+};
+
+const setUserEmailFromOneTap = (email) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("ween_user_email", email);
+  }
+};
+
+// ---------- Icons with Premium Blue/Yellow Theme ----------
 const Icon = {
   Cart: () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +114,7 @@ const Icon = {
   ),
   Star: ({ filled }) => (
     <svg
-      className={`w-4 h-4 ${filled ? "text-amber-400 fill-amber-400" : "text-gray-300 fill-gray-300"}`}
+      className={`w-4 h-4 ${filled ? "text-[#E4BF1A] fill-[#E4BF1A]" : "text-gray-300 fill-gray-300"}`}
       viewBox="0 0 24 24"
     >
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -166,6 +180,16 @@ const Icon = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
     </svg>
   ),
+  Phone: () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+    </svg>
+  ),
+  Mail: () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  ),
 };
 
 // ---------- Stars Component ----------
@@ -194,7 +218,7 @@ const QRPaymentModal = ({ amount, onSuccess, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
       <div className="bg-white rounded-3xl max-w-sm w-full shadow-2xl overflow-hidden">
-        <div className="bg-gradient-to-br from-violet-600 to-indigo-700 p-6 text-white text-center">
+        <div className="bg-gradient-to-br from-[#0E3F7A] to-[#1975B1] p-6 text-white text-center">
           <p className="text-sm opacity-80 mb-1">Pay via UPI</p>
           <p className="text-3xl font-bold">₹{amount.toLocaleString()}</p>
         </div>
@@ -225,12 +249,12 @@ const QRPaymentModal = ({ amount, onSuccess, onClose }) => {
               value={txnId}
               onChange={(e) => setTxnId(e.target.value)}
               placeholder="Enter 12-digit UTR number"
-              className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:border-violet-500 focus:outline-none"
+              className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:border-[#1975B1] focus:outline-none"
             />
             <button
               onClick={handleSubmit}
               disabled={submitted}
-              className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-[#0E3F7A] to-[#1975B1] text-white py-3 rounded-xl font-semibold disabled:opacity-50 hover:shadow-lg transition"
             >
               {submitted ? "Submitting..." : "Submit for Verification"}
             </button>
@@ -264,7 +288,7 @@ const MapPickerModal = ({ onSelect, onClose }) => {
       }).addTo(map);
 
       const icon = L.divIcon({
-        html: '<div style="background:#6d28d9;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
+        html: '<div style="background:#0E3F7A;width:24px;height:24px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
         iconSize: [24, 24],
         iconAnchor: [12, 24],
       });
@@ -319,12 +343,12 @@ const MapPickerModal = ({ onSelect, onClose }) => {
         <div ref={mapRef} style={{ height: "380px", flex: "0 0 380px" }} className="w-full" />
         <div className="p-4 border-t">
           {address ? (
-            <div className="flex items-start gap-3 bg-violet-50 rounded-xl p-3 mb-3">
-              <div className="text-violet-600 mt-0.5">
+            <div className="flex items-start gap-3 bg-[#E3ECF3] rounded-xl p-3 mb-3">
+              <div className="text-[#0E3F7A] mt-0.5">
                 <Icon.Location />
               </div>
               <div>
-                <p className="text-xs text-violet-600 font-semibold mb-0.5">Selected Location</p>
+                <p className="text-xs text-[#0E3F7A] font-semibold mb-0.5">Selected Location</p>
                 <p className="text-sm text-gray-700 leading-snug">{address}</p>
               </div>
             </div>
@@ -334,7 +358,7 @@ const MapPickerModal = ({ onSelect, onClose }) => {
           <button
             onClick={() => selectedLocation && onSelect({ address, ...selectedLocation })}
             disabled={!selectedLocation}
-            className="w-full bg-violet-600 text-white py-3 rounded-xl font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full bg-[#0E3F7A] text-white py-3 rounded-xl font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#1975B1] transition"
           >
             Confirm Location
           </button>
@@ -345,7 +369,7 @@ const MapPickerModal = ({ onSelect, onClose }) => {
 };
 
 // ---------- Product Detail Page ----------
-const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSignIn }) => {
+const ProductDetailPage = ({ product, user, onBack, onAddToCart, onBuyNow, feedbacks, onSignIn }) => {
   const [qty, setQty] = useState(1);
   const [copied, setCopied] = useState(false);
   const productFeedbacks = feedbacks.filter((f) => f.productId === product.id);
@@ -363,19 +387,19 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 animate-fadeIn">
+    <div className="min-h-screen bg-[#E3ECF3] animate-fadeIn">
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-violet-600 transition font-medium"
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#0E3F7A] transition font-medium"
           >
             <Icon.Back /> Back
           </button>
           <div className="h-4 w-px bg-gray-200" />
           <nav className="text-xs text-gray-400 flex items-center gap-1">
             <span>Home</span><span>/</span>
-            <span className="text-violet-600">{product.category}</span><span>/</span>
+            <span className="text-[#0E3F7A]">{product.category}</span><span>/</span>
             <span className="text-gray-700 font-medium truncate max-w-[200px]">{product.name}</span>
           </nav>
           <div className="ml-auto">
@@ -384,7 +408,7 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 copied
                   ? "bg-green-50 text-green-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-600"
+                  : "bg-gray-100 text-gray-600 hover:bg-[#E3ECF3] hover:text-[#0E3F7A]"
               }`}
             >
               {copied ? (
@@ -402,12 +426,12 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-6">
-        <div className="grid md:grid-cols-2 gap-8 bg-white rounded-3xl shadow-sm overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-8 bg-white rounded-3xl shadow-lg overflow-hidden">
           <div className="p-6">
-            <div className="bg-gray-50 rounded-2xl overflow-hidden aspect-square flex items-center justify-center mb-4">
-              {product.imageUrl ? (
+            <div className="bg-[#E3ECF3] rounded-2xl overflow-hidden aspect-square flex items-center justify-center mb-4">
+              {/* {product.imageUrl ? (
                 <img
-                  src={product.imageUrl}
+                  src={`data:image/jpeg;base64,${product.imageBase64}`}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onError={(e) => (e.target.src = "https://placehold.co/400x400?text=Product")}
@@ -416,15 +440,29 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
                 <div className="text-gray-300">
                   <Icon.Package />
                 </div>
-              )}
+              )} */}
+              {product.imageBase64 ? (
+  <img
+    src={`data:image/jpeg;base64,${product.imageBase64}`}
+    alt={product.name}
+    className="w-full h-full object-cover"
+    onError={(e) =>
+      (e.target.src = "https://placehold.co/400x400?text=Product")
+    }
+  />
+) : (
+  <div className="text-gray-300">
+    <Icon.Package />
+  </div>
+)}
             </div>
-            <span className="inline-flex px-3 py-1 bg-violet-100 text-violet-700 text-xs font-semibold rounded-full">
+            <span className="inline-flex px-3 py-1 bg-[#E3ECF3] text-[#0E3F7A] text-xs font-semibold rounded-full">
               {product.category}
             </span>
           </div>
 
           <div className="p-6 flex flex-col">
-            <h1 className="text-2xl font-bold text-gray-900 leading-tight">{product.name}</h1>
+            <h1 className="text-2xl font-bold text-[#151B20] leading-tight">{product.name}</h1>
             <div className="flex items-center gap-3 mt-2">
               <Stars rating={parseFloat(avgRating)} />
               <span className="text-sm text-gray-500">
@@ -432,7 +470,7 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
               </span>
             </div>
             <div className="mt-4">
-              <span className="text-4xl font-extrabold text-violet-700">
+              <span className="text-4xl font-extrabold text-[#0E3F7A]">
                 ₹{product.price.toLocaleString()}
               </span>
             </div>
@@ -478,12 +516,20 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
                   </div>
                   <span className="text-sm text-gray-400">Max: {product.stock}</span>
                 </div>
-                <button
-                  onClick={() => onAddToCart(product, qty)}
-                  className="mt-4 w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-4 rounded-2xl font-bold text-base shadow-lg shadow-violet-200 hover:shadow-violet-300 transition"
-                >
-                  Add to Cart — ₹{(product.price * qty).toLocaleString()}
-                </button>
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => onAddToCart(product, qty)}
+                    className="flex-1 bg-[#0E3F7A] text-white py-4 rounded-2xl font-bold text-base shadow-lg hover:bg-[#1975B1] transition"
+                  >
+                    Add to Cart — ₹{(product.price * qty).toLocaleString()}
+                  </button>
+                  <button
+                    onClick={() => onBuyNow(product, qty)}
+                    className="flex-1 bg-[#E4BF1A] text-[#151B20] py-4 rounded-2xl font-bold text-base shadow-lg hover:bg-[#d4af10] transition"
+                  >
+                    Buy Now
+                  </button>
+                </div>
               </>
             )}
 
@@ -493,25 +539,25 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, feedbacks, onSi
                 ["↩️", "Easy Returns", "7 day policy"],
                 ["🔒", "Secure Pay", "UPI & COD"],
               ].map(([icon, title, sub]) => (
-                <div key={title} className="bg-gray-50 rounded-xl p-3 text-center">
+                <div key={title} className="bg-[#E3ECF3] rounded-xl p-3 text-center">
                   <div className="text-xl mb-1">{icon}</div>
-                  <p className="text-xs font-semibold text-gray-700">{title}</p>
-                  <p className="text-xs text-gray-400">{sub}</p>
+                  <p className="text-xs font-semibold text-[#151B20]">{title}</p>
+                  <p className="text-xs text-gray-500">{sub}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="mt-6 bg-white rounded-3xl shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Customer Reviews</h2>
+        <div className="mt-6 bg-white rounded-3xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-[#151B20] mb-4">Customer Reviews</h2>
           {productFeedbacks.length === 0 ? (
             <p className="text-gray-400 text-sm text-center py-8">No reviews yet. Be the first to review!</p>
           ) : (
             <div className="space-y-4">
               {productFeedbacks.map((fb) => (
                 <div key={fb.id} className="flex gap-4 pb-4 border-b border-gray-50 last:border-0">
-                  <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center text-violet-700 font-bold flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#E3ECF3] flex items-center justify-center text-[#0E3F7A] font-bold flex-shrink-0">
                     {fb.userName?.charAt(0)?.toUpperCase()}
                   </div>
                   <div className="flex-1">
@@ -537,17 +583,29 @@ const ProductCard = ({ product, onView, onAddToCart, view }) => {
   return isGrid ? (
     <div
       onClick={() => onView(product)}
-      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer group hover:-translate-y-0.5"
+      className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 overflow-hidden cursor-pointer group hover:-translate-y-0.5"
     >
-      <div className="relative bg-gray-50 aspect-square overflow-hidden">
-        <img
+      <div className="relative bg-[#E3ECF3] aspect-square overflow-hidden">
+        {/* <img
           src={product.imageUrl || "https://placehold.co/400x400?text=Product"}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => (e.target.src = "https://placehold.co/400x400?text=Product")}
-        />
+        /> */}
+        <img
+  src={
+    product.imageBase64
+      ? `data:image/jpeg;base64,${product.imageBase64}`
+      : "https://placehold.co/400x400?text=Product"
+  }
+  alt={product.name}
+  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  onError={(e) =>
+    (e.target.src = "https://placehold.co/400x400?text=Product")
+  }
+/>
         {product.stock <= 5 && product.stock > 0 && (
-          <span className="absolute top-2 left-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+          <span className="absolute top-2 left-2 bg-[#E4BF1A] text-[#151B20] text-xs px-2 py-0.5 rounded-full font-semibold">
             Only {product.stock} left
           </span>
         )}
@@ -560,7 +618,7 @@ const ProductCard = ({ product, onView, onAddToCart, view }) => {
         )}
       </div>
       <div className="p-3">
-        <span className="text-xs text-violet-600 font-semibold bg-violet-50 px-2 py-0.5 rounded-full">
+        <span className="text-xs text-[#0E3F7A] font-semibold bg-[#E3ECF3] px-2 py-0.5 rounded-full">
           {product.category}
         </span>
         <h3 className="font-semibold text-gray-800 text-sm mt-1.5 line-clamp-2 leading-snug">
@@ -571,7 +629,7 @@ const ProductCard = ({ product, onView, onAddToCart, view }) => {
           <span className="text-xs text-gray-400">({product.rating || 4.5})</span>
         </div>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-lg font-extrabold text-gray-900">
+          <span className="text-lg font-extrabold text-[#0E3F7A]">
             ₹{product.price.toLocaleString()}
           </span>
           <button
@@ -580,7 +638,7 @@ const ProductCard = ({ product, onView, onAddToCart, view }) => {
               onAddToCart(product, 1);
             }}
             disabled={product.stock === 0}
-            className="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3 py-1.5 rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="bg-[#0E3F7A] hover:bg-[#1975B1] text-white text-xs px-3 py-1.5 rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
             Add
           </button>
@@ -590,31 +648,37 @@ const ProductCard = ({ product, onView, onAddToCart, view }) => {
   ) : (
     <div
       onClick={() => onView(product)}
-      className="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden cursor-pointer group flex gap-4 p-4"
+      className="bg-white rounded-2xl shadow-md hover:shadow-lg transition overflow-hidden cursor-pointer group flex gap-4 p-4"
     >
-      <div className="w-24 h-24 bg-gray-50 rounded-xl flex-shrink-0 overflow-hidden">
-        <img
-          src={product.imageUrl || "https://placehold.co/400x400?text=Product"}
-          alt={product.name}
-          className="w-full h-full object-cover"
-          onError={(e) => (e.target.src = "https://placehold.co/400x400?text=Product")}
-        />
+      <div className="w-24 h-24 bg-[#E3ECF3] rounded-xl flex-shrink-0 overflow-hidden">
+    <img
+  src={
+    product.imageBase64
+      ? `data:image/jpeg;base64,${product.imageBase64}`
+      : "https://placehold.co/400x400?text=Product"
+  }
+  alt={product.name}
+  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  onError={(e) =>
+    (e.target.src = "https://placehold.co/400x400?text=Product")
+  }
+/>
       </div>
       <div className="flex-1 min-w-0">
-        <span className="text-xs text-violet-600 font-semibold">{product.category}</span>
+        <span className="text-xs text-[#0E3F7A] font-semibold">{product.category}</span>
         <h3 className="font-semibold text-gray-800 mt-0.5 line-clamp-1">{product.name}</h3>
         <Stars rating={product.rating || 4.5} size={3} />
         <p className="text-xs text-gray-400 mt-1 line-clamp-1">{product.description}</p>
       </div>
       <div className="flex flex-col items-end justify-between flex-shrink-0">
-        <span className="text-xl font-extrabold text-gray-900">₹{product.price.toLocaleString()}</span>
+        <span className="text-xl font-extrabold text-[#0E3F7A]">₹{product.price.toLocaleString()}</span>
         <button
           onClick={(e) => {
             e.stopPropagation();
             onAddToCart(product, 1);
           }}
           disabled={product.stock === 0}
-          className="bg-violet-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold disabled:opacity-40 transition"
+          className="bg-[#0E3F7A] text-white text-xs px-3 py-1.5 rounded-lg font-semibold disabled:opacity-40 transition hover:bg-[#1975B1]"
         >
           Add to Cart
         </button>
@@ -653,29 +717,35 @@ const CartSidebar = ({ cart, user, onClose, onRemove, onUpdateQty, onCheckout })
             </div>
           ) : (
             cart.map((item) => (
-              <div key={item.productId} className="flex gap-3 bg-gray-50 rounded-2xl p-3">
+              <div key={item.productId} className="flex gap-3 bg-[#E3ECF3] rounded-2xl p-3">
                 <div className="w-16 h-16 bg-white rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
-                  <img
-                    src={item.imageUrl || "https://placehold.co/400x400?text=Product"}
-                    className="w-full h-full object-cover"
-                    alt={item.name}
-                    onError={(e) => (e.target.src = "https://placehold.co/400x400?text=Product")}
-                  />
+                <img
+  src={
+    item.imageBase64
+      ? `data:image/jpeg;base64,${item.imageBase64}`
+      : "https://placehold.co/400x400?text=Product"
+  }
+  className="w-full h-full object-cover"
+  alt={item.name}
+  onError={(e) =>
+    (e.target.src = "https://placehold.co/400x400?text=Product")
+  }
+/>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-semibold text-sm text-gray-800 line-clamp-1">{item.name}</h4>
-                  <p className="text-violet-600 font-bold text-sm mt-0.5">₹{item.price.toLocaleString()}</p>
+                  <p className="text-[#0E3F7A] font-bold text-sm mt-0.5">₹{item.price.toLocaleString()}</p>
                   <div className="flex items-center gap-2 mt-1.5">
                     <button
                       onClick={() => onUpdateQty(item.productId, item.quantity - 1)}
-                      className="w-6 h-6 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 font-bold hover:bg-violet-50"
+                      className="w-6 h-6 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 font-bold hover:bg-[#E3ECF3]"
                     >
                       −
                     </button>
                     <span className="text-sm font-semibold w-6 text-center">{item.quantity}</span>
                     <button
                       onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
-                      className="w-6 h-6 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 font-bold hover:bg-violet-50"
+                      className="w-6 h-6 bg-white rounded-lg shadow-sm flex items-center justify-center text-gray-600 font-bold hover:bg-[#E3ECF3]"
                     >
                       +
                     </button>
@@ -699,11 +769,11 @@ const CartSidebar = ({ cart, user, onClose, onRemove, onUpdateQty, onCheckout })
           <div className="border-t px-5 py-4">
             <div className="flex justify-between items-center mb-4">
               <span className="text-gray-500 font-medium">Total Amount</span>
-              <span className="text-2xl font-extrabold text-gray-900">₹{total.toLocaleString()}</span>
+              <span className="text-2xl font-extrabold text-[#0E3F7A]">₹{total.toLocaleString()}</span>
             </div>
             <button
               onClick={onCheckout}
-              className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-violet-200 hover:shadow-violet-300 transition"
+              className="w-full bg-gradient-to-r from-[#0E3F7A] to-[#1975B1] text-white py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition"
             >
               Proceed to Checkout
             </button>
@@ -812,15 +882,15 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
             <div className="flex items-center gap-2">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                  step >= 1 ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-400"
+                  step >= 1 ? "bg-[#0E3F7A] text-white" : "bg-gray-100 text-gray-400"
                 }`}
               >
                 1
               </div>
-              <div className={`w-6 h-0.5 ${step >= 2 ? "bg-violet-400" : "bg-gray-200"}`} />
+              <div className={`w-6 h-0.5 ${step >= 2 ? "bg-[#E4BF1A]" : "bg-gray-200"}`} />
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                  step >= 2 ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-400"
+                  step >= 2 ? "bg-[#0E3F7A] text-white" : "bg-gray-100 text-gray-400"
                 }`}
               >
                 2
@@ -837,7 +907,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                 <h3 className="font-semibold text-gray-700 mb-3">Delivery Address</h3>
                 <button
                   onClick={() => setShowMap(true)}
-                  className="w-full flex items-center gap-2 border-2 border-dashed border-violet-300 rounded-xl px-4 py-3 text-violet-600 hover:bg-violet-50 transition text-sm font-medium"
+                  className="w-full flex items-center gap-2 border-2 border-dashed border-[#1975B1] rounded-xl px-4 py-3 text-[#0E3F7A] hover:bg-[#E3ECF3] transition text-sm font-medium"
                 >
                   <Icon.Location />{" "}
                   {mapLocation ? "Location set — tap to change" : "Pin location on Map"}
@@ -853,7 +923,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                   placeholder="Street / House No *"
                   value={deliveryAddress.street}
                   onChange={(e) => setDeliveryAddress((a) => ({ ...a, street: e.target.value }))}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-violet-500 outline-none"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-[#1975B1] outline-none"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -861,14 +931,14 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                     placeholder="City *"
                     value={deliveryAddress.city}
                     onChange={(e) => setDeliveryAddress((a) => ({ ...a, city: e.target.value }))}
-                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-violet-500 outline-none"
+                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-[#1975B1] outline-none"
                   />
                   <input
                     type="text"
                     placeholder="State"
                     value={deliveryAddress.state}
                     onChange={(e) => setDeliveryAddress((a) => ({ ...a, state: e.target.value }))}
-                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-violet-500 outline-none"
+                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-[#1975B1] outline-none"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -877,14 +947,14 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                     placeholder="Pincode *"
                     value={deliveryAddress.pincode}
                     onChange={(e) => setDeliveryAddress((a) => ({ ...a, pincode: e.target.value }))}
-                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-violet-500 outline-none"
+                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-[#1975B1] outline-none"
                   />
                   <input
                     type="text"
                     placeholder="Phone"
                     value={deliveryAddress.phone}
                     onChange={(e) => setDeliveryAddress((a) => ({ ...a, phone: e.target.value }))}
-                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-violet-500 outline-none"
+                    className="border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-[#1975B1] outline-none"
                   />
                 </div>
                 <button
@@ -895,7 +965,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                     }
                     setStep(2);
                   }}
-                  className="w-full bg-violet-600 text-white py-3 rounded-xl font-semibold mt-2"
+                  className="w-full bg-[#0E3F7A] text-white py-3 rounded-xl font-semibold mt-2 hover:bg-[#1975B1] transition"
                 >
                   Continue to Payment
                 </button>
@@ -927,15 +997,13 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                       onClick={() => setPaymentMethod(opt.id)}
                       className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition ${
                         paymentMethod === opt.id
-                          ? `border-${opt.color}-500 bg-${opt.color}-50`
+                          ? "border-[#0E3F7A] bg-[#E3ECF3]"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
                       <div
                         className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                          paymentMethod === opt.id
-                            ? `bg-${opt.color}-100 text-${opt.color}-600`
-                            : "bg-gray-100 text-gray-400"
+                          paymentMethod === opt.id ? "bg-[#0E3F7A] text-white" : "bg-gray-100 text-gray-400"
                         }`}
                       >
                         <opt.Icon />
@@ -946,9 +1014,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                       </div>
                       <div
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          paymentMethod === opt.id
-                            ? `border-${opt.color}-500 bg-${opt.color}-500`
-                            : "border-gray-300"
+                          paymentMethod === opt.id ? "border-[#0E3F7A] bg-[#0E3F7A]" : "border-gray-300"
                         }`}
                       >
                         {paymentMethod === opt.id && <div className="w-2 h-2 bg-white rounded-full" />}
@@ -957,7 +1023,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                   ))}
                 </div>
 
-                <div className="bg-gray-50 rounded-2xl p-4">
+                <div className="bg-[#E3ECF3] rounded-2xl p-4">
                   <p className="text-sm font-semibold text-gray-700 mb-2">Order Summary</p>
                   {cart.map((i) => (
                     <div key={i.productId} className="flex justify-between text-xs text-gray-500 py-1">
@@ -971,7 +1037,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                   ))}
                   <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between font-bold">
                     <span>Total</span>
-                    <span className="text-violet-600">₹{total.toLocaleString()}</span>
+                    <span className="text-[#0E3F7A]">₹{total.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -985,7 +1051,7 @@ const CheckoutModal = ({ cart, user, onClose, onOrderPlaced }) => {
                   <button
                     onClick={() => (paymentMethod === "qr" ? setShowQR(true) : handlePlaceOrder())}
                     disabled={isPlacing}
-                    className="flex-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg disabled:opacity-50"
+                    className="flex-1 bg-gradient-to-r from-[#0E3F7A] to-[#1975B1] text-white py-3 rounded-xl font-bold shadow-lg disabled:opacity-50 hover:shadow-xl transition"
                   >
                     {isPlacing
                       ? "Placing..."
@@ -1027,9 +1093,9 @@ export default function HomePage() {
   const [toast, setToast] = useState(null);
 
   const carouselSlides = [
-    { bg: "from-violet-700 to-indigo-900", title: "Shop Smarter", sub: "Premium products at honest prices", emoji: "🛒" },
-    { bg: "from-rose-500 to-pink-700", title: "New Arrivals", sub: "Fresh picks every week", emoji: "✨" },
-    { bg: "from-emerald-500 to-teal-700", title: "Fast Delivery", sub: "Right to your doorstep", emoji: "🚀" },
+    { bg: "from-[#0E3F7A] to-[#1975B1]", title: "Shop Smarter", sub: "Premium products at honest prices", emoji: "🛒" },
+    { bg: "from-[#1975B1] to-[#0E3F7A]", title: "New Arrivals", sub: "Fresh picks every week", emoji: "✨" },
+    { bg: "from-[#E4BF1A] to-[#d4af10]", title: "Fast Delivery", sub: "Right to your doorstep", emoji: "🚀" },
   ];
 
   const showToast = (msg, type = "success") => {
@@ -1059,6 +1125,9 @@ export default function HomePage() {
         await ensureUserInFirestore(firebaseUser);
         setUser(firebaseUser);
         loadUserOrders(firebaseUser.uid);
+        if (firebaseUser.email) {
+          setUserEmailFromOneTap(firebaseUser.email);
+        }
       }
       setLoading(false);
     });
@@ -1068,6 +1137,7 @@ export default function HomePage() {
     window.addEventListener("cartUpdated", refreshCart);
     const interval = setInterval(() => setCurrentSlide((s) => (s + 1) % carouselSlides.length), 5000);
 
+    // Google One Tap - shows email ID directly
     const loadOneTap = () => {
       if (typeof window !== "undefined" && window.google?.accounts?.id) {
         window.google.accounts.id.initialize({
@@ -1078,12 +1148,16 @@ export default function HomePage() {
               const result = await signInWithCredential(auth, cred);
               await ensureUserInFirestore(result.user);
               setUser(result.user);
+              if (result.user.email) {
+                setUserEmailFromOneTap(result.user.email);
+              }
               setShowLoginPopup(false);
             } catch (e) {
               console.error(e);
             }
           },
         });
+        window.google.accounts.id.prompt();
       }
     };
     if (window.google?.accounts?.id) loadOneTap();
@@ -1108,6 +1182,8 @@ export default function HomePage() {
       const snap = await getDocs(q);
       let list = snap.docs.map((d) => ({ id: d.id, ...convertTimestamps(d.data()) }));
       if (list.length === 0) {
+        // Note: In production, all products come from Firebase with imageUrl containing Base64 data
+        // For first-time setup, we create sample entries
         const samples = [
           { name: "Tide Plus Detergent Powder", price: 399, stock: 50, category: "Detergent", description: "Premium detergent for tough stains. Works great in all water types.", imageUrl: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400", rating: 4.5 },
           { name: "Surf Excel Easy Wash", price: 449, stock: 40, category: "Detergent", description: "Quick stain removal formula. Gentle on fabrics.", imageUrl: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=400", rating: 4.3 },
@@ -1126,9 +1202,7 @@ export default function HomePage() {
       setCategories(["all", ...new Set(list.map((p) => p.category).filter(Boolean))]);
     } catch (err) {
       console.error(err);
-      setProducts([
-        { id: "1", name: "Tide Plus Detergent", price: 399, category: "Detergent", stock: 50, imageUrl: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400", rating: 4.5, description: "Premium detergent" },
-      ]);
+      setProducts([]);
     }
   };
 
@@ -1157,6 +1231,9 @@ export default function HomePage() {
       const result = await signInWithPopup(auth, googleProvider);
       await ensureUserInFirestore(result.user);
       setUser(result.user);
+      if (result.user.email) {
+        setUserEmailFromOneTap(result.user.email);
+      }
       setShowLoginPopup(false);
       loadUserOrders(result.user.uid);
     } catch (e) {
@@ -1183,16 +1260,55 @@ export default function HomePage() {
     const existing = c.find((i) => i.productId === product.id);
     if (existing) existing.quantity += qty;
     else
+      // c.push({
+      //   productId: product.id,
+      //   name: product.name,
+      //   price: product.price,
+      //   imageUrl: product.imageUrl,
+      //   quantity: qty,
+      //   stock: product.stock,
+      // });
       c.push({
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        imageUrl: product.imageUrl,
-        quantity: qty,
-        stock: product.stock,
-      });
+  productId: product.id,
+  name: product.name,
+  price: product.price,
+  imageBase64: product.imageBase64,
+  quantity: qty,
+  stock: product.stock,
+});
     saveCart(c);
     showToast(`${product.name} added to cart!`);
+  };
+
+  const handleBuyNow = (product, qty = 1) => {
+    if (!user) {
+      setShowLoginPopup(true);
+      return;
+    }
+    // Clear cart and add only this product, then proceed to checkout
+    // saveCart([{
+    //   productId: product.id,
+    //   name: product.name,
+    //   price: product.price,
+    //   imageUrl: product.imageUrl,
+    //   quantity: qty,
+    //   stock: product.stock,
+    // }]);
+
+saveCart([{
+  productId: product.id,
+  name: product.name,
+  price: product.price,
+  imageBase64: product.imageBase64,
+  quantity: qty,
+  stock: product.stock,
+}]);
+
+
+    refreshCart();
+    setShowCart(false);
+    setShowCheckout(true);
+    showToast("Proceeding to checkout!");
   };
 
   const handleRemoveFromCart = (pid) => {
@@ -1260,7 +1376,7 @@ export default function HomePage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-700 to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0E3F7A] to-[#1975B1] flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white/80 text-sm font-medium">Loading Ween...</p>
@@ -1278,10 +1394,8 @@ export default function HomePage() {
           setSelectedProduct(null);
           window.history.pushState({}, "", window.location.pathname);
         }}
-        onAddToCart={(p, qty) => {
-          handleAddToCart(p, qty);
-          showToast("Added to cart!");
-        }}
+        onAddToCart={handleAddToCart}
+        onBuyNow={handleBuyNow}
         onSignIn={() => setShowLoginPopup(true)}
       />
     );
@@ -1314,7 +1428,7 @@ export default function HomePage() {
       {toast && (
         <div
           className={`fixed top-4 left-1/2 -translate-x-1/2 z-[300] animate-toastIn px-5 py-3 rounded-full shadow-xl text-white text-sm font-semibold flex items-center gap-2 ${
-            toast.type === "info" ? "bg-gray-700" : "bg-gradient-to-r from-violet-600 to-indigo-600"
+            toast.type === "info" ? "bg-gray-700" : "bg-gradient-to-r from-[#0E3F7A] to-[#1975B1]"
           }`}
         >
           {toast.type !== "info" && <Icon.Check />} {toast.msg}
@@ -1332,7 +1446,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-4 py-3">
             <div className="flex items-center gap-2.5 flex-shrink-0">
-              <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-md">
+              <div className="w-9 h-9 bg-gradient-to-br from-[#0E3F7A] to-[#1975B1] rounded-xl flex items-center justify-center shadow-md">
                 <span className="text-white font-black text-base">W</span>
               </div>
               <div className="hidden sm:block">
@@ -1350,7 +1464,7 @@ export default function HomePage() {
                 placeholder="Search products, brands..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl border-2 border-transparent focus:border-violet-300 focus:bg-white outline-none text-sm transition"
+                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 rounded-xl border-2 border-transparent focus:border-[#1975B1] focus:bg-white outline-none text-sm transition"
               />
             </div>
 
@@ -1371,7 +1485,7 @@ export default function HomePage() {
               ) : (
                 <button
                   onClick={() => setShowLoginPopup(true)}
-                  className="flex items-center gap-2 bg-violet-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-violet-700 transition"
+                  className="flex items-center gap-2 bg-[#0E3F7A] text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-[#1975B1] transition"
                 >
                   <span>Sign In</span>
                 </button>
@@ -1382,7 +1496,7 @@ export default function HomePage() {
               >
                 <Icon.Cart />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-violet-600 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold px-1">
+                  <span className="absolute -top-1 -right-1 bg-[#0E3F7A] text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center font-bold px-1">
                     {cartCount > 99 ? "99+" : cartCount}
                   </span>
                 )}
@@ -1397,7 +1511,7 @@ export default function HomePage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition ${
                   selectedCategory === cat
-                    ? "bg-violet-600 text-white shadow-sm"
+                    ? "bg-[#0E3F7A] text-white shadow-sm"
                     : "text-gray-500 hover:bg-gray-100"
                 }`}
               >
@@ -1420,7 +1534,7 @@ export default function HomePage() {
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-3 text-sm font-semibold border-b-2 transition ${
                 activeTab === tab
-                  ? "border-violet-600 text-violet-600"
+                  ? "border-[#0E3F7A] text-[#0E3F7A]"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -1481,7 +1595,7 @@ export default function HomePage() {
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`p-2 rounded-lg transition ${
-                    viewMode === "grid" ? "bg-white shadow-sm text-violet-600" : "text-gray-400"
+                    viewMode === "grid" ? "bg-white shadow-sm text-[#0E3F7A]" : "text-gray-400"
                   }`}
                 >
                   <Icon.Grid />
@@ -1489,7 +1603,7 @@ export default function HomePage() {
                 <button
                   onClick={() => setViewMode("list")}
                   className={`p-2 rounded-lg transition ${
-                    viewMode === "list" ? "bg-white shadow-sm text-violet-600" : "text-gray-400"
+                    viewMode === "list" ? "bg-white shadow-sm text-[#0E3F7A]" : "text-gray-400"
                   }`}
                 >
                   <Icon.List />
@@ -1507,7 +1621,7 @@ export default function HomePage() {
                     setSearchTerm("");
                     setSelectedCategory("all");
                   }}
-                  className="mt-4 text-violet-600 text-sm font-medium"
+                  className="mt-4 text-[#0E3F7A] text-sm font-medium"
                 >
                   Clear filters
                 </button>
@@ -1549,7 +1663,7 @@ export default function HomePage() {
                 <p className="text-gray-400 text-sm mt-1">Track all your purchases in one place</p>
                 <button
                   onClick={handleGoogleSignIn}
-                  className="mt-6 bg-violet-600 text-white px-8 py-3 rounded-xl font-semibold"
+                  className="mt-6 bg-[#0E3F7A] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#1975B1] transition"
                 >
                   Sign In with Google
                 </button>
@@ -1561,7 +1675,7 @@ export default function HomePage() {
                 <p className="text-gray-400 text-sm mt-1">Start shopping to see your orders here</p>
                 <button
                   onClick={() => setActiveTab("shop")}
-                  className="mt-6 bg-violet-600 text-white px-8 py-3 rounded-xl font-semibold"
+                  className="mt-6 bg-[#0E3F7A] text-white px-8 py-3 rounded-xl font-semibold hover:bg-[#1975B1] transition"
                 >
                   Shop Now
                 </button>
@@ -1584,7 +1698,7 @@ export default function HomePage() {
                             {order.status?.replace("_", " ")}
                           </span>
                           {order.paymentMethod === "qr" && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-violet-100 text-violet-600 font-medium">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#E3ECF3] text-[#0E3F7A] font-medium">
                               UPI
                             </span>
                           )}
@@ -1632,7 +1746,7 @@ export default function HomePage() {
                       </div>
                     )}
                     {order.transactionId && (
-                      <div className="px-4 pb-4 text-xs text-violet-600 font-medium">
+                      <div className="px-4 pb-4 text-xs text-[#0E3F7A] font-medium">
                         UTR: {order.transactionId}
                       </div>
                     )}
@@ -1656,7 +1770,7 @@ export default function HomePage() {
                         onClick={() => setNewFeedback((f) => ({ ...f, rating: r }))}
                         className="text-2xl transition"
                       >
-                        <span className={r <= newFeedback.rating ? "text-amber-400" : "text-gray-200"}>
+                        <span className={r <= newFeedback.rating ? "text-[#E4BF1A]" : "text-gray-200"}>
                           ★
                         </span>
                       </button>
@@ -1667,12 +1781,12 @@ export default function HomePage() {
                     value={newFeedback.comment}
                     onChange={(e) => setNewFeedback((f) => ({ ...f, comment: e.target.value }))}
                     placeholder="Tell others about your experience..."
-                    className="w-full border-2 border-gray-200 rounded-xl p-3 text-sm resize-none focus:border-violet-400 outline-none"
+                    className="w-full border-2 border-gray-200 rounded-xl p-3 text-sm resize-none focus:border-[#1975B1] outline-none"
                     rows="3"
                   />
                   <button
                     onClick={handleSubmitFeedback}
-                    className="mt-2 bg-violet-600 text-white px-5 py-2 rounded-xl text-sm font-semibold"
+                    className="mt-2 bg-[#0E3F7A] text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-[#1975B1] transition"
                   >
                     Post Review
                   </button>
@@ -1680,7 +1794,7 @@ export default function HomePage() {
               ) : (
                 <button
                   onClick={() => setShowLoginPopup(true)}
-                  className="text-violet-600 font-semibold text-sm hover:underline"
+                  className="text-[#0E3F7A] font-semibold text-sm hover:underline"
                 >
                   Sign in to leave a review →
                 </button>
@@ -1695,7 +1809,7 @@ export default function HomePage() {
               feedbacks.map((fb) => (
                 <div key={fb.id} className="bg-white rounded-2xl shadow-sm p-4">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    <div className="w-9 h-9 bg-gradient-to-br from-[#0E3F7A] to-[#1975B1] rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                       {fb.userName?.charAt(0)?.toUpperCase()}
                     </div>
                     <div>
@@ -1719,15 +1833,49 @@ export default function HomePage() {
         )}
       </main>
 
-      <footer className="bg-gray-900 text-gray-400 py-8 mt-8">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-7 h-7 bg-violet-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-black text-sm">W</span>
+      <footer className="bg-[#151B20] text-gray-400 py-8 mt-8 border-t border-gray-800">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+            <div>
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#0E3F7A] to-[#1975B1] rounded-lg flex items-center justify-center">
+                  <span className="text-white font-black text-sm">W</span>
+                </div>
+                <span className="text-white font-bold text-lg">Ween</span>
+              </div>
+              <p className="text-sm text-gray-400">Premium quality products delivered to your doorstep with love and care.</p>
             </div>
-            <span className="text-white font-bold">Ween</span>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Contact Us</h4>
+              <div className="space-y-2 text-sm">
+                <p className="flex items-center justify-center md:justify-start gap-2"><Icon.Phone /> +91 98765 43210</p>
+                <p className="flex items-center justify-center md:justify-start gap-2"><Icon.Mail /> care@ween.com</p>
+                <p className="flex items-center justify-center md:justify-start gap-2"><Icon.Location /> Sam Riddhi Group, Mumbai, India</p>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><button onClick={() => setActiveTab("shop")} className="hover:text-[#E4BF1A] transition">Shop</button></li>
+                <li><button onClick={() => user ? setActiveTab("orders") : setShowLoginPopup(true)} className="hover:text-[#E4BF1A] transition">My Orders</button></li>
+                <li><button onClick={() => setActiveTab("reviews")} className="hover:text-[#E4BF1A] transition">Reviews</button></li>
+                <li><button className="hover:text-[#E4BF1A] transition">Track Order</button></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-white mb-3">Policies</h4>
+              <ul className="space-y-2 text-sm">
+                <li><button className="hover:text-[#E4BF1A] transition">Privacy Policy</button></li>
+                <li><button className="hover:text-[#E4BF1A] transition">Terms & Conditions</button></li>
+                <li><button className="hover:text-[#E4BF1A] transition">Return Policy</button></li>
+                <li><button className="hover:text-[#E4BF1A] transition">Shipping Info</button></li>
+              </ul>
+            </div>
           </div>
-          <p className="text-sm">© 2025 Ween by Sam Riddhi Group · Designed by Softmax.in</p>
+          <div className="border-t border-gray-800 mt-8 pt-6 text-center text-xs text-gray-500">
+            <p>© 2025 Ween by Sam Riddhi Group · Designed by Softmax.in</p>
+            <p className="mt-1">📍 404, Well Street, Andheri East, Mumbai - 400069, Maharashtra, India</p>
+          </div>
         </div>
       </footer>
 
@@ -1741,7 +1889,7 @@ export default function HomePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-violet-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-violet-200">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0E3F7A] to-[#1975B1] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
                 <span className="text-3xl text-white font-black">W</span>
               </div>
               <h2 className="text-2xl font-extrabold text-gray-900">Welcome to Ween</h2>
