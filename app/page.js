@@ -390,7 +390,7 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, onBuyNow, feedb
   return (
     <div className="min-h-screen bg-[#F0F4F8]">
       {/* Header - always visible */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+      {/* <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 py-3">
             <div className="flex items-center gap-2.5 flex-shrink-0">
@@ -398,8 +398,8 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, onBuyNow, feedb
                 <span className="text-white font-black text-base">W</span>
               </div>
               <div className="hidden sm:block">
-                <p className="font-black text-gray-900 text-lg leading-none">Ween</p>
-                <p className="text-gray-400 text-xs leading-none">Sam Riddhi Group</p>
+                <p className="font-black text-gray-900 text-lg leading-none">विन</p>
+                <p className="text-gray-400 text-xs leading-none">Samruddhi Group of Industries</p>
               </div>
             </div>
             <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-[#0E3F7A] transition font-medium ml-2">
@@ -420,7 +420,76 @@ const ProductDetailPage = ({ product, user, onBack, onAddToCart, onBuyNow, feedb
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+  <div className="max-w-7xl mx-auto px-4">
+    <div className="flex items-center gap-3 py-3">
+      
+      {/* Logo + Brand */}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-md flex items-center justify-center bg-white border border-gray-100">
+          <img
+            src="/logo.png"
+            alt="Ween Logo"
+            className="w-full h-full object-contain scale-110"
+          />
+        </div>
+
+        <div className="hidden sm:block">
+          <p className="font-black text-[#E11D2E] text-xl leading-none tracking-wide">
+            विन
+          </p>
+          <p className="text-gray-400 text-xs leading-none mt-1">
+            Samruddhi Group of Industries
+          </p>
+        </div>
+      </div>
+
+      {/* Back Button */}
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-[#0E3F7A] transition font-medium ml-2"
+      >
+        <Icon.Back /> Back
+      </button>
+
+      {/* Breadcrumb */}
+      <nav className="hidden md:flex text-xs text-gray-400 items-center gap-1 ml-1">
+        <span>Home</span>
+        <span>/</span>
+        <span className="text-[#0E3F7A]">
+          {product.category}
+        </span>
+        <span>/</span>
+        <span className="text-gray-700 font-medium truncate max-w-[160px]">
+          {product.name}
+        </span>
+      </nav>
+
+      {/* Share Button */}
+      <div className="ml-auto flex items-center gap-2">
+        <button
+          onClick={handleShare}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${
+            copied
+              ? "bg-green-50 text-green-600"
+              : "bg-gray-100 text-gray-600 hover:bg-[#E3ECF3] hover:text-[#0E3F7A]"
+          }`}
+        >
+          {copied ? (
+            <>
+              <Icon.Check /> Copied!
+            </>
+          ) : (
+            <>
+              <Icon.Share /> Share
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Main product card - two columns on desktop */}
@@ -1536,7 +1605,7 @@ export default function HomePage() {
     {/* Text */}
     <div>
       <p className="text-[#E11D2E] font-black text-2xl leading-none tracking-wide">
-        Ween
+        विन
       </p>
       <p className="text-gray-400 text-xs mt-1">
         Samruddhi Group of Industries
