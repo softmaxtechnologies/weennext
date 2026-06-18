@@ -1471,15 +1471,40 @@ export default function HomePage() {
   };
 
   // ---------- Lifecycle ----------
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return;
+  //   const params = new URLSearchParams(window.location.search);
+  //   const pid = params.get("product");
+  //   if (pid && products.length > 0) {
+  //     const p = products.find((pr) => pr.id === pid);
+  //     if (p) setSelectedProduct(p);
+  //   }
+  // }, [products]);
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const pid = params.get("product");
-    if (pid && products.length > 0) {
-      const p = products.find((pr) => pr.id === pid);
-      if (p) setSelectedProduct(p);
-    }
-  }, [products]);
+  if (typeof window === "undefined") return;
+  
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get("product");
+  const pathSegments = window.location.pathname.split('/');
+  const slug = pathSegments[pathSegments.length - 1];
+  
+  if (slug && products.length > 0 && slug !== 'shop' && slug !== 'about' && slug !== 'contact') {
+    // Match by slug
+    const p = products.find((pr) => {
+      const productSlug = pr.name
+        ?.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      return productSlug === slug || pr.id === slug;
+    });
+    if (p) setSelectedProduct(p);
+  } else if (pid && products.length > 0) {
+    const p = products.find((pr) => pr.id === pid);
+    if (p) setSelectedProduct(p);
+  }
+}, [products]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
