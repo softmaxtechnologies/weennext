@@ -1,129 +1,18 @@
-import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
-import { initializeApp, getApps } from "firebase/app";
+import { getAllProducts } from "@/lib/products";
+import { SITE_URL, slugify } from "@/lib/utils";
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
+export default async function sitemap() {
+  const products = await getAllProducts();
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-const db = getFirestore(app);
-
-const createSlug = (name) => {
-  if (!name) return '';
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-};
-
-// Function to generate URLs for both domains
-const generateUrlsForDomain = (baseUrl, products) => {
-  // Static pages for this domain
-  const staticUrls = [
-    { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: `${baseUrl}/shop`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
-    { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
-  ];
-
-  // Product URLs for this domain
-  const productUrls = products.map((product) => ({
-    url: `${baseUrl}/product/${createSlug(product.name) || product.id}`,
-    lastModified: product.createdAt?.toDate?.() || new Date(),
-    changeFrequency: 'weekly',
+  const productUrls = products.map((p) => ({
+    url: `${SITE_URL}/products/${slugify(p.name)}`,
+    lastModified: p.createdAt ? new Date(p.createdAt) : new Date(),
+    changeFrequency: "weekly",
     priority: 0.8,
   }));
 
-  return [...staticUrls, ...productUrls];
-};
-
-export default async function sitemap() {
-  // Both domains
-  const domains = [
-    'https://samruddhiindustries.netlify.app',
-    'https://getween.in'
+  return [
+    { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
+    ...productUrls,
   ];
-  
-  // Fetch products once
-  let products = [];
-  try {
-    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    products = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-
-  // Generate URLs for both domains
-  const allUrls = domains.flatMap(domain => 
-    generateUrlsForDomain(domain, products)
-  );
-
-  return allUrls;
 }
-
-
-
-
-// import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
-// import { initializeApp, getApps } from "firebase/app";
-
-// const firebaseConfig = {
-//   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-//   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-//   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-//   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-//   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-//   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-// };
-
-// const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-// const db = getFirestore(app);
-
-// const createSlug = (name) => {
-//   if (!name) return '';
-//   return name
-//     .toLowerCase()
-//     .replace(/[^a-z0-9\s-]/g, '')
-//     .replace(/\s+/g, '-')
-//     .replace(/-+/g, '-')
-//     .trim();
-// };
-
-// export default async function sitemap() {
-//   const baseUrl = 'https://samruddhiindustries.netlify.app';
-  
-//   // Static pages
-//   const staticUrls = [
-//     { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-//     { url: `${baseUrl}/shop`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
-//     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
-//     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
-//   ];
-
-//   // Products from Firebase
-//   let productUrls = [];
-//   try {
-//     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-//     const snap = await getDocs(q);
-//     const products = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    
-//     productUrls = products.map((product) => ({
-//       url: `${baseUrl}/product/${createSlug(product.name) || product.id}`,
-//       lastModified: product.createdAt?.toDate?.() || new Date(),
-//       changeFrequency: 'weekly',
-//       priority: 0.8,
-//     }));
-//   } catch (error) {
-//     console.error("Error fetching products:", error);
-//   }
-
-//   return [...staticUrls, ...productUrls];
-// }
